@@ -19,7 +19,10 @@
     <h1> Blog en JS </h1>
     <nav>
         <button id="button_posts"> Articles </button>
+        <button id="button_category"> Category</button>
+        <button id="user"> User</button>
     </nav>
+    <div id="loader" style="display:none"><img src="loading_2.gif" alt=""></div>
 
     <div id="root"> </div>
     </div>
@@ -49,6 +52,10 @@ window.onload = function () {
     document.getElementById("button_posts").addEventListener('click', function () {
 console.log('BEGIN POSTS')
 
+root.innerHTML=''
+
+loader.style.display='block'
+
 fetch('http://localhost:8000/api/posts')
 
 .then (response => {
@@ -59,7 +66,7 @@ fetch('http://localhost:8000/api/posts')
 .then (data => {
     console.log('Data = ', data)
     let posts = data['hydra:member']
-    console.log('posts')
+    console.log(posts)
     return posts.map (function (post){
         console.log('Post = ', post)
 
@@ -74,14 +81,103 @@ fetch('http://localhost:8000/api/posts')
         let div =createNode('div')
         append(root,div)
         div.innerHTML= `${post.content}`
+
+        div =createNode('div')
+        append(root,div)
         div.innerHTML = `${post.createdAt}`
+
+        loader.style.display='none'
+
+    })
+})
+console.log('END POSTS')
+    })
+
+    document.getElementById('button_category').addEventListener('click', function () {
+
+        root.innerHTML=''
+
+        const loader = document.getElementById('loader')
+        loader.style.display='block'
+
+        fetch ('http://localhost:8000/api/categories')
+
+        .then (response => {
+            console.log('Response = ', response)
+            return response.json()
+        })
+
+        .then (data => {
+            console.log('Data = ', data)
+
+            let categories = data['hydra:member']
+            console.log('Categories = ', categories)
+
+            return categories.map (function (category){ 
+                console.log('Category = ', category)
+
+                let id =createNode('h2')
+                append(root,id)
+                id.innerHTML = `${category.id}`
+
+                let name =createNode('div')
+                append(root,name)
+                name.innerHTML = `${category.name}`
+
+                let slug =createNode('div')
+                append(root,slug)
+                slug.innerHTML = `${category.slug}`
+                
+                loader.style.display='none'
+
+            })
+        })
+        
+    })
+    document.getElementById('user').addEventListener('click', function () {
+
+root.innerHTML=''
+
+const loader = document.getElementById('loader')
+loader.style.display='block'
+
+fetch ('http://localhost:8000/api/users')
+
+.then (response => {
+    console.log('Response = ', response)
+    return response.json()
+})
+
+.then (data => {
+    console.log('Data = ', data)
+
+    let users = data['hydra:member']
+    console.log('Users = ', users)
+
+    return users.map (function (user){ 
+        console.log('Users = ', user)
+
+        let id =createNode('h2')
+        append(root,id)
+        id.innerHTML = `${user.id}`
+
+        let email =createNode('div')
+        append(root,email)
+        email.innerHTML = `${user.email}`
+
+        let verified =createNode('div')
+        append(root,verified)
+        verified.innerHTML = `${user.verified}`
+        
+        loader.style.display='none'
 
     })
 })
 
-console.log('END POSTS')
-    })
+})
+    
 }
+
 </script>
 
 </body>
